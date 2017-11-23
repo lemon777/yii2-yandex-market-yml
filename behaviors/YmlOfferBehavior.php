@@ -52,7 +52,9 @@ use yii\base\InvalidConfigException;
  */
 class YmlOfferBehavior extends Behavior
 {
-    const BATCH_MAX_SIZE = 100;
+    public $batchSize = 100;
+
+    public $sleep = 0;
 
     /** @var callable */
     public $dataClosure;
@@ -78,15 +80,19 @@ class YmlOfferBehavior extends Behavior
             call_user_func($this->scope, $query);
         }
 
-        foreach ($query->each(self::BATCH_MAX_SIZE) as $model) {
-            $data = call_user_func($this->dataClosure, $model);
+        foreach ($query->batch($this->batchSize) as $models) {
+            foreach ($models as $model) {
+                $data = call_user_func($this->dataClosure, $model);
 
-            if (empty($data)) {
-                continue;
+                if (empty($data)) {
+                    continue;
+                }
+
+                $result[] = $data;
             }
-
-            $result[] = $data;
+            sleep($this->sleep);
         }
+
         return $result;
     }
 }

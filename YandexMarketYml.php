@@ -14,6 +14,7 @@ use yii\caching\Cache;
 use corpsepk\yml\models\Shop;
 use corpsepk\yml\behaviors\YmlCategoryBehavior;
 use corpsepk\yml\behaviors\YmlOfferBehavior;
+use yii\base\BootstrapInterface;
 
 /**
  * Yii2 module for automatically generating Yandex.Market YML.
@@ -21,7 +22,7 @@ use corpsepk\yml\behaviors\YmlOfferBehavior;
  * @author Corpsepk
  * @package corpsepk\yml
  */
-class YandexMarketYml extends Module
+class YandexMarketYml extends Module implements BootstrapInterface
 {
     public $controllerNamespace = 'corpsepk\yml\controllers';
 
@@ -46,6 +47,9 @@ class YandexMarketYml extends Module
     /** @var array */
     public $shopOptions = [];
 
+    /** @var string for console*/
+    public $outputFilePath;
+
     public function init()
     {
         parent::init();
@@ -56,6 +60,13 @@ class YandexMarketYml extends Module
 
         if (!$this->cacheProvider instanceof Cache) {
             throw new InvalidConfigException('Invalid `cacheKey` parameter was specified.');
+        }
+    }
+
+    public function bootstrap($app)
+    {
+        if ($app instanceof \yii\console\Application) {
+            $this->controllerNamespace = 'corpsepk\yml\commands';
         }
     }
 
@@ -78,7 +89,6 @@ class YandexMarketYml extends Module
             } else {
                 $model = new $modelName;
             }
-
             $shop->offers = array_merge($shop->offers, $model->generateOffers());
         }
 

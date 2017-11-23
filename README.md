@@ -8,18 +8,17 @@ Yii2 module for automatically generation [Yandex.Market YML](https://yandex.ru/s
 
 Installation
 ------------
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-* Either run
-
-```
-php composer.phar require --prefer-dist "corpsepk/yii2-yandex-market-yml" "~0.3"
-```
-
-or add
+add to `composer.json` file.
 
 ```json
-"corpsepk/yii2-yandex-market-yml" : "~0.3"
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/lemon777/yii2-yandex-market-yml"
+    }
+],
+"corpsepk/yii2-yandex-market-yml" : "dev-master"
 ```
 
 to the `require` section of your application's `composer.json` file.
@@ -64,6 +63,40 @@ Add a new module in `modules` section of your application's configuration file, 
 ],
 ```
 
+For console config
+-------------------
+```php
+'bootstrap' => ['yml'],
+'modules' => [
+    'YandexMarketYml' => [
+        'class' => 'corpsepk\yml\YandexMarketYml',
+        'enableGzip' => true, // default is false
+        'cacheExpire' => 1, // 1 second. Default is 24 hours
+        'categoryModel' => 'app\models\Category',
+        'outputFilePath' => \Yii::getAlias('@frontend/web/yandex-market.yml'),
+        'shopOptions' => [
+            'name' => 'MyCompanyName',
+            'company' => 'LTD MyCompanyName',
+            'url' => 'http://example.com',
+            'currencies' => [
+                [
+                    'id' => 'RUR',
+                    'rate' => 1
+                ]
+            ],
+        ],
+        'offerModels' => [
+            ['class' => 'app\models\Item'],
+        ],
+    ],
+],
+```
+run console command:
+```
+php yii yml/default
+```
+
+
 Add a new rule for `urlManager` of your application's configuration file, for example:
 
 ```php
@@ -98,7 +131,7 @@ public function behaviors()
                     'name' => $model->name,
                     'parentId' => $model->parent_id
                 ];
-            }
+            },
         ],
     ];
 }
@@ -140,7 +173,8 @@ public function behaviors()
                     'vendor' => $model->brand ? $model->brand->name : null,
                     'description' => $model->description,
                 ]);
-            }
+            },
+            'sleep' => 0
         ],
     ];
 }
