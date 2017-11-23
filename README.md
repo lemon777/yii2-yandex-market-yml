@@ -18,10 +18,12 @@ add to `composer.json` file.
         "url": "https://github.com/lemon777/yii2-yandex-market-yml"
     }
 ],
-"corpsepk/yii2-yandex-market-yml" : "dev-master"
+"require": {
+  ...
+  "corpsepk/yii2-yandex-market-yml" : "dev-master"
+}
 ```
 
-to the `require` section of your application's `composer.json` file.
 
 
 Configure config
